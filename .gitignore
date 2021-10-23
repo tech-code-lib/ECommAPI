@@ -3,3 +3,5 @@
 ################################################################################
 
 /ECommAPI/obj
+/.vs/ECommerce
+/ECommAPI/bin/Debug/netcoreapp3.1

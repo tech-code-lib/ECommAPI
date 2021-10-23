@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,21 @@ namespace ECommAPI
 
             app.UseAuthorization();
 
+            //app.Run(async context => { await context.Response.WriteAsync("Hello World"); });
+            //app.Use(async (context, next) => {
+            //    if (context.Request.Headers["connection"] == "keep-alive1")
+            //    {
+            //        await context.Response.WriteAsync($"Invalid Request from {context.Connection.RemoteIpAddress}");
+            //    }
+
+            //    await next.Invoke();
+            //});
+
+            //app.Run(async context => 
+            //{ 
+            //    await context.Response.WriteAsync("Pipeline Terminated"); 
+            //});
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
