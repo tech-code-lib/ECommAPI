@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:34255",
+      "applicationUrl": "http://localhost:49994",
       "sslPort": 0
     }
   },
@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ECommAPI": {
+    "ECommerceAPI": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/products",

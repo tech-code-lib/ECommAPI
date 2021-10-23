@@ -1,7 +1,8 @@
+using ECommerceAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,14 +11,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-namespace ECommAPI
+using AutoMapper;
+namespace ECommerceAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false)
+            .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -25,7 +32,10 @@ namespace ECommAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ECommDBContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("ECommDB")));
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
+            services.AddCors(opt => opt.AddPolicy("ECommCorsPolicy", policy => policy.WithExposedHeaders("Location").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,26 +45,11 @@ namespace ECommAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("ECommCorsPolicy");
             app.UseRouting();
 
             app.UseAuthorization();
 
-            //app.Run(async context => { await context.Response.WriteAsync("Hello World"); });
-            //app.Use(async (context, next) => {
-            //    if (context.Request.Headers["connection"] == "keep-alive1")
-            //    {
-            //        await context.Response.WriteAsync($"Invalid Request from {context.Connection.RemoteIpAddress}");
-            //    }
-
-            //    await next.Invoke();
-            //});
-
-            //app.Run(async context => 
-            //{ 
-            //    await context.Response.WriteAsync("Pipeline Terminated"); 
-            //});
-            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

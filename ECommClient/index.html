@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<body onload="loadProducts()">
+
+<h1>ECommerce Application Example</h1>
+<p>Products List</p>
+<table id="productGrid">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Desc</th>
+        <th>Price</th>
+        <th>Action</th>
+    </tr>    
+</table>
+<div id="viewProduct">
+    
+</div>
+<div>
+    <h2>Add new Product</h2>
+    <form id="formElem">
+        <div>
+            <label id="name" for="prdctName">Name</label>
+            <input type="text" id="prdctName" name="name" />
+        </div>
+        <div>
+            <label id="description" for="prdctDesc">Description</label>
+            <input type="text" id="prdctDesc" name="description" />
+        </div>
+        <div>
+            <label id="price" for="prdctPrice">Price</label>
+            <input type="text" id="prdctPrice" name="price" />
+        </div>
+        <div>
+            <label id="cat" for="prdctCategory">Category</label>
+            <input type="text" id="prdctCategory" name="categoryId" />
+        </div>
+        <div>
+            <input type="button" onclick="addNewProduct()"  value="Submit" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+
+function loadProducts(){
+    fetch('http://localhost:49994/api/Products')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        var table = document.getElementById('productGrid');
+        for(var i=0; i < data.length; i++)
+        {
+            var newRow = table.insertRow();
+            var newCell1 = newRow.insertCell();
+            var newCell2 = newRow.insertCell();
+            var newCell3 = newRow.insertCell();
+            var newCell4 = newRow.insertCell();
+            var newCell5 = newRow.insertCell();
+            newCell1.innerHTML = data[i].id;
+            newCell2.innerHTML = data[i].name;
+            newCell3.innerHTML = data[i].description;
+            newCell4.innerHTML = data[i].price;
+            newCell5.innerHTML = "<button onclick='viewProduct("+ data[i].id +")'>View</button>";
+        }
+        
+    });
+}
+
+function viewProduct(id)
+{
+    fetch('http://localhost:49994/api/Products/'+id)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); 
+        document.getElementById('viewProduct').innerHTML = "<p><b>"+ data.name +"</b>"+ " "+ data.description +","+ data.price +"</p>";
+    });
+}
+
+function LoadProduct(url)
+{
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); 
+        var table = document.getElementById('productGrid');
+        var newRow = table.insertRow();
+        var newCell1 = newRow.insertCell();
+        var newCell2 = newRow.insertCell();
+        var newCell3 = newRow.insertCell();
+        var newCell4 = newRow.insertCell();
+        var newCell5 = newRow.insertCell();
+        newCell1.innerHTML = data.id;
+        newCell2.innerHTML = data.name;
+        newCell3.innerHTML = data.description;
+        newCell4.innerHTML = data.price;
+        newCell5.innerHTML = "<button onclick='viewProduct("+ data.id +")'>View</button>";
+    });
+}
+
+function myFunction(e){
+        
+        //e.preventDefault();
+        try
+        {
+            var form = document.getElementById("formElem");
+            console.log(form);
+        }
+        catch(e)
+        {
+            console.log(e);
+        }
+        alert();
+        
+        
+        //  data = {
+        //  name : form.querySelector('input[name="name"]').value,
+        //    description : form.querySelector('input[name="description"]').value,
+        //    age : 5
+        //  }
+
+        //  console.log(data);
+        //  alert();
+        // let response = await fetch('http://localhost:8482/decode', {
+        //         method: 'POST', // or 'PUT'
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify(data),
+        // })
+
+        // let text = await response.text(); // read response body as text
+        // document.querySelector("#decoded").innerHTML = text;
+    };
+
+    function  addNewProduct()
+    {
+        var form = document.querySelector('#formElem');
+        var data = {
+            name : form.querySelector('input[name="name"]').value,
+            description : form.querySelector('input[name="description"]').value,
+            price : parseFloat(form.querySelector('input[name="price"]').value),
+            categoryId : parseInt(form.querySelector('input[name="categoryId"]').value)
+         }
+
+         console.log(data);
+
+         fetch('http://localhost:49994/api/Products', {
+             method: 'POST',
+             headers: {
+                'Content-Type': 'application/json',
+             },
+             body: JSON.stringify(data)
+         })
+        .then(response => response)
+        .then(data => {
+            console.log(data.headers.get('Location')); 
+            var url =  data.headers.get('Location');
+            LoadProduct(url);          
+        });
+    }
+    
+</script>
+</body>
+</html>
