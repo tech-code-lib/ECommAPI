@@ -41,7 +41,7 @@ namespace ECommerceAPI.Controllers
             }
 
             var productDto = _mapper.Map<Product, ProductDTO>(product);
-            return Ok(product);
+            return Ok(productDto);
         }
 
         [HttpGet]
@@ -75,6 +75,41 @@ namespace ECommerceAPI.Controllers
             _dbContext.SaveChanges();
 
             return CreatedAtAction(nameof(GetProductDetailById), new { id = productToAdd.Id }, productToAdd);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateAProduct(int id, [FromBody] ProductDTO product)
+        {
+            if (id != product.Id)
+            {
+                return BadRequest();
+            }
+
+            var checkIfProductExist = _dbContext.Products.Any(x => x.Id == product.Id);
+            if (!checkIfProductExist)
+            {
+                return NotFound();
+            }
+
+            var productToUpdate = _mapper.Map<ProductDTO, Product>(product);
+            _dbContext.Entry(productToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _dbContext.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteAProduct(int id)
+        {
+            var productToDelete = _dbContext.Products.FirstOrDefault(x => x.Id == id);
+            if (productToDelete == null)
+            {
+                return NotFound();
+            }
+            _dbContext.Products.Remove(productToDelete);
+            _dbContext.SaveChanges();
+
+            return NoContent();
         }
     }
 }
